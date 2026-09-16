@@ -1,0 +1,8 @@
+rule preprocess_clinical:
+    input:
+        "data/raw/metabolon e glicemia 090926_rev_LA.xlsx"
+    output:
+        "data/processed/clinical_tvas.csv",
+        "data/processed/clinical_guide.csv"
+    script:
+        "scripts/preprocess_clinical.py"

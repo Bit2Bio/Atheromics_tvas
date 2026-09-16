@@ -20,6 +20,6 @@ Atheromics_v2/
 ## Run
 
 ```bash
-cd workflow
-snakemake --cores 4
+cd /home/lorenzo/Atheromics_v2
+snakemake --cores 4 -s workflow/Snakefile
 ```

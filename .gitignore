@@ -1,0 +1,19 @@
+data/raw/
+data/processed/
+results/
+logs/
+tmp/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+renv/library/
+
+# OS
+.DS_Store

@@ -11,19 +11,20 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-EXCEL  = "data/raw/metabolon e glicemia 090926_rev_LA.xlsx"
-SHEET  = "TVAS"
-OUT_DIR = Path("data/processed")
+EXCEL    = "data/raw/metabolon e glicemia 090926_rev_LA.xlsx"
+SHEET    = "TVAS"
+MET_FILE = "data/processed/metabolomics_tvas.csv"
+OUT_DIR  = Path("data/processed")
 
 VARIABLES = [
     # (nome_originale, nome_armonizzato, tipo)
     ("Età",                        "age",              "continuous"),
     ("sesso",                      "gender",           "categorical"),
     ("ADA con IGM (IFG+IGT)",      "ada_igm",          "categorical"),
+    ("DM2 (anamnesi)",             "dm2",              "categorical"),
     ("Familiarità diabete",        "familiarity_dm",   "categorical"),
     ("Familiarità CVD",            "familiarity_cvd",  "categorical"),
     ("Fumo (0=no 1=si 2=ex)",      "smoking",          "categorical"),
-    ("ATS carotidea",              "ats_carotidea",    "categorical"),
     ("sintomi Ats carot",          "ats_symptoms",     "categorical"),
     ("Peso",                       "weight",           "continuous"),
     ("Altezza",                    "height",           "continuous"),
@@ -87,6 +88,14 @@ for col in continuous:
     out[col] = pd.to_numeric(out[col], errors="coerce")
 
 # --------------------------------------------------------------------------
+# Replace invalid values with NA for categorical variables
+# --------------------------------------------------------------------------
+categorical = [name for _, name, typ in VARIABLES if typ == "categorical"]
+invalid = {"?", "1?", "/", "", " "}
+for col in categorical:
+    out[col] = out[col].apply(lambda x: np.nan if str(x).strip() in invalid else x)
+
+# --------------------------------------------------------------------------
 # Specific fixes
 # --------------------------------------------------------------------------
 # sesso: 2 → 0
@@ -111,6 +120,12 @@ guide = pd.DataFrame(
     [(name, typ) for _, name, typ in VARIABLES],
     columns=["harmonized_name", "type"]
 )
+
+# --------------------------------------------------------------------------
+# Align to metabolomics sample order
+# --------------------------------------------------------------------------
+met_ids = pd.read_csv(MET_FILE, index_col=0).index
+out = out.reindex(met_ids)
 
 # --------------------------------------------------------------------------
 # Save

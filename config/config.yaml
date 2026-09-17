@@ -1,0 +1,81 @@
+covariates: "age,gender"
+
+variables:
+  - name: age
+    type: continuous
+  - name: gender
+    type: categorical
+  - name: ada_igm
+    type: categorical
+  - name: dm2
+    type: categorical
+  - name: familiarity_dm
+    type: categorical
+  - name: familiarity_cvd
+    type: categorical
+  - name: smoking
+    type: categorical
+  - name: ats_symptoms
+    type: categorical
+  - name: weight
+    type: continuous
+  - name: height
+    type: continuous
+  - name: bmi
+    type: continuous
+  - name: waist
+    type: continuous
+  - name: pa_syst
+    type: continuous
+  - name: pa_diast
+    type: continuous
+  - name: cholesterol
+    type: continuous
+  - name: hdl
+    type: continuous
+  - name: ldl
+    type: continuous
+  - name: triglycerides
+    type: continuous
+  - name: ast
+    type: continuous
+  - name: alt
+    type: continuous
+  - name: azotemia
+    type: continuous
+  - name: creatinine
+    type: continuous
+  - name: gfr
+    type: continuous
+  - name: fpg
+    type: continuous
+  - name: gluc_120
+    type: continuous
+  - name: auc_ogtt_gluc
+    type: continuous
+  - name: insulinemia
+    type: continuous
+  - name: ins_120
+    type: continuous
+  - name: auc_ogtt_ins
+    type: continuous
+  - name: hba1c
+    type: continuous
+  - name: igf1
+    type: continuous
+  - name: peptide_c
+    type: continuous
+  - name: hscrp
+    type: continuous
+  - name: crp
+    type: continuous
+  - name: fibrinogen
+    type: continuous
+  - name: wbc
+    type: continuous
+  - name: plaque_type
+    type: categorical
+  - name: homa_ir
+    type: continuous
+  - name: tyg_index
+    type: continuous

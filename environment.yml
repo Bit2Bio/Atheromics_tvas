@@ -1,0 +1,14 @@
+name: atheromics_tvas
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - pandas
+  - numpy
+  - openpyxl
+  - snakemake
+  - pip
+  - pip:
+    - matplotlib

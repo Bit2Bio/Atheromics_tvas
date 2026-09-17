@@ -1,8 +1,129 @@
+configfile: "config/config.yaml"
+
+VARIABLES = {v["name"]: v["type"] for v in config["variables"]}
+
+
+rule all:
+    input:
+        "data/processed/metabolomics_tvas.csv",
+        "data/processed/clinical_tvas.csv",
+        "data/processed/clinical_guide.csv",
+        expand("results/metabolomics/limma/{variable}/done.txt",
+               variable=VARIABLES.keys()),
+        expand("results/proteomics/limma/{variable}/done.txt",
+               variable=VARIABLES.keys()),
+        "results/clinics/descriptive/continuous.csv",
+        "results/clinics/descriptive/categorical.csv",
+        "results/metabolomics/summary_heatmap.png",
+        "results/proteomics/summary_heatmap.png"
+
+
+rule preprocess_metabolomics:
+    input:
+        "data/raw/metabolomics/log_transformed_data.csv"
+    output:
+        "data/processed/metabolomics_tvas.csv"
+    script:
+        "scripts/preprocess_metabolomics.py"
+
+
 rule preprocess_clinical:
     input:
-        "data/raw/metabolon e glicemia 090926_rev_LA.xlsx"
+        "data/raw/metabolon e glicemia 090926_rev_LA.xlsx",
+        "data/processed/metabolomics_tvas.csv"
     output:
         "data/processed/clinical_tvas.csv",
         "data/processed/clinical_guide.csv"
     script:
         "scripts/preprocess_clinical.py"
+
+
+rule preprocess_proteomics:
+    input:
+        "data/raw/proteomics/FedericiAllPlates_Extended_NPX_2026-03-11.csv"
+    output:
+        "data/processed/proteomics_all.csv",
+        "data/processed/proteomics_tvas.csv"
+    script:
+        "scripts/preprocess_proteomics.py"
+
+
+rule descriptive_clinical:
+    input:
+        clinical = "data/processed/clinical_tvas.csv",
+        guide    = "data/processed/clinical_guide.csv"
+    output:
+        "results/clinics/descriptive/continuous.csv",
+        "results/clinics/descriptive/categorical.csv"
+    script:
+        "scripts/descriptive_clinical.py"
+
+
+rule summary_heatmap:
+    input:
+        expand("results/{omic}/limma/{variable}/done.txt",
+               variable=VARIABLES.keys(), allow_missing=True)
+    output:
+        "results/{omic}/summary_heatmap.png"
+    params:
+        results_dir = "results/{omic}/limma/",
+        script      = "workflow/scripts/summary_heatmap.py"
+    shell:
+        """
+        python {params.script} \
+            --omic    {wildcards.omic} \
+            --results {params.results_dir} \
+            --out     {output}
+        """
+
+
+rule limma_proteomics:
+    input:
+        data  = "data/processed/proteomics_tvas.csv",
+        meta  = "data/processed/clinical_tvas.csv",
+        guide = "data/processed/clinical_guide.csv"
+    output:
+        "results/proteomics/limma/{variable}/done.txt"
+    params:
+        var_type   = lambda wc: VARIABLES[wc.variable],
+        covariates = config["covariates"],
+        out_dir    = "results/proteomics/limma/{variable}/",
+        script     = "workflow/scripts/proteomics_limma.R"
+    shell:
+        """
+        Rscript {params.script} \
+            --variable   {wildcards.variable} \
+            --type       {params.var_type} \
+            --covariates {params.covariates} \
+            --input      {input.data} \
+            --metadata   {input.meta} \
+            --guide      {input.guide} \
+            --out_dir    {params.out_dir} \
+        && touch {output}
+        """
+
+
+rule limma_metabolomics:
+    input:
+        data  = "data/processed/metabolomics_tvas.csv",
+        meta  = "data/processed/clinical_tvas.csv",
+        guide = "data/processed/clinical_guide.csv"
+    output:
+        "results/metabolomics/limma/{variable}/done.txt"
+    params:
+        var_type   = lambda wc: VARIABLES[wc.variable],
+        covariates = config["covariates"],
+        out_dir    = "results/metabolomics/limma/{variable}/",
+        script     = "workflow/scripts/metabolomics_limma.R"
+    shell:
+        """
+        Rscript {params.script} \
+            --variable   {wildcards.variable} \
+            --type       {params.var_type} \
+            --covariates {params.covariates} \
+            --input      {input.data} \
+            --metadata   {input.meta} \
+            --guide      {input.guide} \
+            --out_dir    {params.out_dir} \
+        && touch {output}
+        """

@@ -1,11 +1,11 @@
-# Atheromics_v2
+# Atheromics_TVAS
 
-Multi-omic analysis pipeline (metabolomics, proteomics) on the Atheromics cohort.
+Multi-omic analysis pipeline (metabolomics, proteomics) on the Atheromics TVAS cohort.
 
 ## Structure
 
 ```
-Atheromics_v2/
+Atheromics_TVAS/
 ├── data/
 │   ├── raw/           ← raw data (not versioned)
 │   └── processed/     ← preprocessed data (not versioned)
@@ -20,6 +20,6 @@ Atheromics_v2/
 ## Run
 
 ```bash
-cd /home/lorenzo/Atheromics_v2
+cd /home/lorenzo/Atheromics_TVAS
 snakemake --cores 4 -s workflow/Snakefile
 ```

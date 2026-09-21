@@ -15,7 +15,8 @@ rule all:
         "results/clinics/descriptive/continuous.csv",
         "results/clinics/descriptive/categorical.csv",
         "results/metabolomics/summary_heatmap.png",
-        "results/proteomics/summary_heatmap.png"
+        "results/proteomics/summary_heatmap.png",
+        "results/report/atheromics_tvas_report.pptx"
 
 
 rule preprocess_metabolomics:
@@ -75,6 +76,18 @@ rule summary_heatmap:
             --results {params.results_dir} \
             --out     {output}
         """
+
+
+rule report_pptx:
+    input:
+        continuous  = "results/clinics/descriptive/continuous.csv",
+        categorical = "results/clinics/descriptive/categorical.csv",
+        heatmap_met = "results/metabolomics/summary_heatmap.png",
+        heatmap_pro = "results/proteomics/summary_heatmap.png"
+    output:
+        "results/report/atheromics_tvas_report.pptx"
+    script:
+        "scripts/make_pptx_report.py"
 
 
 rule limma_proteomics:

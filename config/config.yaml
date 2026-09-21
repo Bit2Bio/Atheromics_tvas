@@ -7,80 +7,119 @@ stratified_descriptive:
 
 variables:
   - name: age
+    excel_name: "Età"
     type: continuous
   - name: gender
+    excel_name: "sesso"
     type: categorical
   - name: ada_igm
+    excel_name: "ADA con IGM (IFG+IGT)"
     type: categorical
   - name: dm2
+    excel_name: "DM2 (anamnesi)"
     type: categorical
   - name: familiarity_dm
+    excel_name: "Familiarità diabete"
     type: categorical
   - name: familiarity_cvd
+    excel_name: "Familiarità CVD"
     type: categorical
   - name: smoking
+    excel_name: "Fumo (0=no 1=si 2=ex)"
     type: categorical
   - name: ats_symptoms
+    excel_name: "sintomi Ats carot"
     type: categorical
   - name: weight
+    excel_name: "Peso"
     type: continuous
   - name: height
+    excel_name: "Altezza"
     type: continuous
   - name: bmi
+    excel_name: "BMI"
     type: continuous
   - name: waist
+    excel_name: "vita"
     type: continuous
   - name: pa_syst
+    excel_name: "PA syst"
     type: continuous
   - name: pa_diast
+    excel_name: "PA diast"
     type: continuous
   - name: cholesterol
+    excel_name: "colesterolo tot"
     type: continuous
   - name: hdl
+    excel_name: "HDL"
     type: continuous
   - name: ldl
+    excel_name: "LDL"
     type: continuous
   - name: triglycerides
+    excel_name: "trigliceridi"
     type: continuous
   - name: ast
+    excel_name: "AST"
     type: continuous
   - name: alt
+    excel_name: "ALT"
     type: continuous
   - name: azotemia
+    excel_name: "azotemia"
     type: continuous
   - name: creatinine
+    excel_name: "creatinina"
     type: continuous
   - name: gfr
+    excel_name: "GFR"
     type: continuous
   - name: fpg
+    excel_name: "FPG 0' mg/dl"
     type: continuous
   - name: gluc_120
+    excel_name: "120' mg/dl"
     type: continuous
   - name: auc_ogtt_gluc
+    excel_name: "AUC OGTT GLIC"
     type: continuous
   - name: insulinemia
+    excel_name: "Insulinemia 0'"
     type: continuous
   - name: ins_120
+    excel_name: "120'"
     type: continuous
   - name: auc_ogtt_ins
+    excel_name: "AUC OGTT INS "
     type: continuous
   - name: hba1c
+    excel_name: "HbA1c"
     type: continuous
   - name: igf1
+    excel_name: "IGF1"
     type: continuous
   - name: peptide_c
+    excel_name: "Peptide C"
     type: continuous
   - name: hscrp
+    excel_name: "hsPCR"
     type: continuous
   - name: crp
+    excel_name: "PCR"
     type: continuous
   - name: fibrinogen
+    excel_name: "fibrinogeno"
     type: continuous
   - name: wbc
+    excel_name: "WBC"
     type: continuous
   - name: plaque_type
+    excel_name: "placca stabile/instabile.1"
     type: categorical
   - name: homa_ir
+    excel_name: "HOMA IR"
     type: continuous
   - name: tyg_index
+    excel_name: "Tyg Index"
     type: continuous

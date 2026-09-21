@@ -3,6 +3,7 @@ data/processed/
 results/
 logs/
 tmp/
+.snakemake/
 
 # Python
 __pycache__/

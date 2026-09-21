@@ -17,46 +17,8 @@ MET_FILE = "data/processed/metabolomics_tvas.csv"
 OUT_DIR  = Path("data/processed")
 
 VARIABLES = [
-    # (nome_originale, nome_armonizzato, tipo)
-    ("Età",                        "age",              "continuous"),
-    ("sesso",                      "gender",           "categorical"),
-    ("ADA con IGM (IFG+IGT)",      "ada_igm",          "categorical"),
-    ("DM2 (anamnesi)",             "dm2",              "categorical"),
-    ("Familiarità diabete",        "familiarity_dm",   "categorical"),
-    ("Familiarità CVD",            "familiarity_cvd",  "categorical"),
-    ("Fumo (0=no 1=si 2=ex)",      "smoking",          "categorical"),
-    ("sintomi Ats carot",          "ats_symptoms",     "categorical"),
-    ("Peso",                       "weight",           "continuous"),
-    ("Altezza",                    "height",           "continuous"),
-    ("BMI",                        "bmi",              "continuous"),
-    ("vita",                       "waist",            "continuous"),
-    ("PA syst",                    "pa_syst",          "continuous"),
-    ("PA diast",                   "pa_diast",         "continuous"),
-    ("colesterolo tot",            "cholesterol",      "continuous"),
-    ("HDL",                        "hdl",              "continuous"),
-    ("LDL",                        "ldl",              "continuous"),
-    ("trigliceridi",               "triglycerides",    "continuous"),
-    ("AST",                        "ast",              "continuous"),
-    ("ALT",                        "alt",              "continuous"),
-    ("azotemia",                   "azotemia",         "continuous"),
-    ("creatinina",                 "creatinine",       "continuous"),
-    ("GFR",                        "gfr",              "continuous"),
-    ("FPG 0' mg/dl",               "fpg",              "continuous"),
-    ("120' mg/dl",                 "gluc_120",         "continuous"),
-    ("AUC OGTT GLIC",              "auc_ogtt_gluc",    "continuous"),
-    ("Insulinemia 0'",             "insulinemia",      "continuous"),
-    ("120'",                       "ins_120",          "continuous"),
-    ("AUC OGTT INS ",              "auc_ogtt_ins",     "continuous"),
-    ("HbA1c",                      "hba1c",            "continuous"),
-    ("IGF1",                       "igf1",             "continuous"),
-    ("Peptide C",                  "peptide_c",        "continuous"),
-    ("hsPCR",                      "hscrp",            "continuous"),
-    ("PCR",                        "crp",              "continuous"),
-    ("fibrinogeno",                "fibrinogen",       "continuous"),
-    ("WBC",                        "wbc",              "continuous"),
-    ("placca stabile/instabile.1", "plaque_type",      "categorical"),
-    ("HOMA IR",                    "homa_ir",          "continuous"),
-    ("Tyg Index",                  "tyg_index",        "continuous"),
+    (v["excel_name"], v["name"], v["type"])
+    for v in snakemake.config["variables"]
 ]
 
 # --------------------------------------------------------------------------

@@ -13,6 +13,7 @@ import pandas as pd
 from pathlib import Path
 
 OLINK_RAW = "data/raw/proteomics/FedericiAllPlates_Extended_NPX_2026-03-11.csv"
+MET_FILE  = "data/processed/metabolomics_tvas.csv"
 OUT_DIR   = Path("data/processed")
 
 LOD_QUANTILE      = 0.05   # NPX percentile used as limit-of-detection proxy
@@ -44,6 +45,12 @@ print(f"proteomics_all.csv:  {mat.shape[0]} proteine x {mat.shape[1]} campioni")
 tvas_cols = [c for c in mat.columns if c.startswith("TVAS_")]
 mat_tvas = mat[tvas_cols].astype(float)
 print(f"After TVAS filter: {mat_tvas.shape[0]} proteine x {mat_tvas.shape[1]} campioni")
+
+# --------------------------------------------------------------------------
+# Align sample order to metabolomics
+# --------------------------------------------------------------------------
+met_ids = pd.read_csv(MET_FILE, index_col=0).index
+mat_tvas = mat_tvas.reindex(columns=met_ids)
 
 # --------------------------------------------------------------------------
 # LOD filter: keep proteins with >25% of samples above the 5th percentile

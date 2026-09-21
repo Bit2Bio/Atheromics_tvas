@@ -8,6 +8,7 @@ rule all:
         "data/processed/metabolomics_tvas.csv",
         "data/processed/clinical_tvas.csv",
         "data/processed/clinical_guide.csv",
+        "data/processed/transcriptomics_tvas.csv",
         expand("results/metabolomics/limma/{variable}/done.txt",
                variable=VARIABLES.keys()),
         expand("results/proteomics/limma/{variable}/done.txt",
@@ -42,12 +43,23 @@ rule preprocess_clinical:
 
 rule preprocess_proteomics:
     input:
-        "data/raw/proteomics/FedericiAllPlates_Extended_NPX_2026-03-11.csv"
+        "data/raw/proteomics/FedericiAllPlates_Extended_NPX_2026-03-11.csv",
+        "data/processed/metabolomics_tvas.csv"
     output:
         "data/processed/proteomics_all.csv",
         "data/processed/proteomics_tvas.csv"
     script:
         "scripts/preprocess_proteomics.py"
+
+
+rule preprocess_transcriptomics:
+    input:
+        "data/raw/transcriptomics/featureCounts_napoli_harmonized_qcfilt.tsv",
+        "data/processed/metabolomics_tvas.csv"
+    output:
+        "data/processed/transcriptomics_tvas.csv"
+    script:
+        "scripts/preprocess_transcriptomics.py"
 
 
 rule descriptive_clinical:

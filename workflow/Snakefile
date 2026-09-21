@@ -14,6 +14,7 @@ rule all:
                variable=VARIABLES.keys()),
         "results/clinics/descriptive/continuous.csv",
         "results/clinics/descriptive/categorical.csv",
+        "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
         "results/metabolomics/summary_heatmap.png",
         "results/proteomics/summary_heatmap.png",
         "results/report/atheromics_tvas_report.pptx"
@@ -60,6 +61,30 @@ rule descriptive_clinical:
         "scripts/descriptive_clinical.py"
 
 
+rule descriptive_clinical_stratified:
+    input:
+        clinical = "data/processed/clinical_tvas.csv",
+        guide    = "data/processed/clinical_guide.csv"
+    output:
+        "results/clinics/descriptive_stratified/descriptive_table_stratified.csv"
+    params:
+        strat_var    = config["stratified_descriptive"]["strat_var"],
+        group_labels = config["stratified_descriptive"]["group_labels"],
+        exclude      = config["stratified_descriptive"]["exclude"],
+        out_dir      = "results/clinics/descriptive_stratified/",
+        script       = "workflow/scripts/clinical_descriptive_stratified.py"
+    shell:
+        """
+        python {params.script} \
+            --input        {input.clinical} \
+            --guide        {input.guide} \
+            --strat_var    {params.strat_var} \
+            --group_labels "{params.group_labels}" \
+            --exclude      {params.exclude} \
+            --out_dir      {params.out_dir}
+        """
+
+
 rule summary_heatmap:
     input:
         expand("results/{omic}/limma/{variable}/done.txt",
@@ -82,6 +107,7 @@ rule report_pptx:
     input:
         continuous  = "results/clinics/descriptive/continuous.csv",
         categorical = "results/clinics/descriptive/categorical.csv",
+        stratified  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
         heatmap_met = "results/metabolomics/summary_heatmap.png",
         heatmap_pro = "results/proteomics/summary_heatmap.png"
     output:

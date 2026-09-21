@@ -1,5 +1,10 @@
 covariates: "age,gender"
 
+stratified_descriptive:
+  strat_var:     dm2
+  group_labels:  "0:dm2 (0),1:dm2 (1)"
+  exclude:       dm2
+
 variables:
   - name: age
     type: continuous

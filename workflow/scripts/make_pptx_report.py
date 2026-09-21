@@ -2,8 +2,9 @@
 """
 Build a minimal summary PPTX report:
   1. Clinical descriptive statistics (continuous + categorical, side by side)
-  2. Metabolomics summary heatmap
-  3. Proteomics summary heatmap
+  2. Clinical descriptive statistics stratified by the target variable
+  3. Metabolomics summary heatmap
+  4. Proteomics summary heatmap
 """
 
 import pandas as pd
@@ -15,6 +16,7 @@ from pptx.enum.text import PP_ALIGN
 
 CONTINUOUS  = "results/clinics/descriptive/continuous.csv"
 CATEGORICAL = "results/clinics/descriptive/categorical.csv"
+STRATIFIED  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv"
 HEATMAP_METABOLOMICS = "results/metabolomics/summary_heatmap.png"
 HEATMAP_PROTEOMICS   = "results/proteomics/summary_heatmap.png"
 OUT = Path("results/report/atheromics_tvas_report.pptx")
@@ -84,6 +86,13 @@ cont[["mean", "sd", "median", "q25", "q75"]] = cont[["mean", "sd", "median", "q2
 cat = pd.read_csv(CATEGORICAL)
 cat["pct"] = cat["pct"].round(1)
 
+strat = pd.read_csv(STRATIFIED)
+pair_cols  = [c for c in strat.columns if "_vs_" in c]
+group_cols = [c for c in strat.columns if c not in ("label", "p_value", "q_value") + tuple(pair_cols)]
+strat = strat[["label"] + group_cols + ["p_value", "q_value"] + pair_cols]
+strat = strat.rename(columns={"label": "Variable", "p_value": "p (omnibus)", "q_value": "q (FDR)"})
+strat = strat.rename(columns={c: c.replace("p_", "p ").replace("_vs_", " vs ") for c in pair_cols})
+
 # --------------------------------------------------------------------------
 # Build presentation
 # --------------------------------------------------------------------------
@@ -97,15 +106,20 @@ add_title(sl1, "Clinical descriptive statistics")
 add_df_table(sl1, cont, Inches(0.3), Inches(1.0), Inches(6.3), Inches(6.2))
 add_df_table(sl1, cat,  Inches(6.8), Inches(1.0), Inches(6.3), Inches(6.2))
 
-# Slide 2: metabolomics summary heatmap
+# Slide 2: clinical descriptive statistics, stratified by target variable
 sl2 = add_slide(prs)
-add_title(sl2, "Metabolomics — summary heatmap")
-add_picture_fit(sl2, HEATMAP_METABOLOMICS, Inches(0.3), Inches(0.9), Inches(12.7), Inches(6.3))
+add_title(sl2, "Clinical descriptive statistics — stratified")
+add_df_table(sl2, strat, Inches(0.3), Inches(1.0), Inches(12.7), Inches(6.2))
 
-# Slide 3: proteomics summary heatmap
+# Slide 3: metabolomics summary heatmap
 sl3 = add_slide(prs)
-add_title(sl3, "Proteomics — summary heatmap")
-add_picture_fit(sl3, HEATMAP_PROTEOMICS, Inches(0.3), Inches(0.9), Inches(12.7), Inches(6.3))
+add_title(sl3, "Metabolomics — summary heatmap")
+add_picture_fit(sl3, HEATMAP_METABOLOMICS, Inches(0.3), Inches(0.9), Inches(12.7), Inches(6.3))
+
+# Slide 4: proteomics summary heatmap
+sl4 = add_slide(prs)
+add_title(sl4, "Proteomics — summary heatmap")
+add_picture_fit(sl4, HEATMAP_PROTEOMICS, Inches(0.3), Inches(0.9), Inches(12.7), Inches(6.3))
 
 # --------------------------------------------------------------------------
 # Save

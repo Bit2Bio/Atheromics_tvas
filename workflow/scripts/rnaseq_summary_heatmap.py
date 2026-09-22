@@ -20,8 +20,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--results", required=True, help="results/transcriptomics/deseq2/ directory")
 parser.add_argument("--out",     required=True, help="Output PNG path")
 parser.add_argument("--fdr",     type=float, default=0.05)
-parser.add_argument("--rows_per_panel", type=int, default=24,
-                     help="Wrap rows into side-by-side panels of this many rows max, for a slide-friendly aspect ratio")
+parser.add_argument("--rows_per_panel", type=int, default=1000,
+                     help="Wrap rows into side-by-side panels of this many rows max (default: effectively never — single tall panel)")
 args = parser.parse_args()
 
 RESULTS = Path(args.results)

@@ -24,9 +24,10 @@ rule all:
         "results/clinics/descriptive/continuous.csv",
         "results/clinics/descriptive/categorical.csv",
         "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
+        "results/clinics/qc/continuous_distributions.png",
         "results/metabolomics/summary_heatmap.png",
         "results/proteomics/summary_heatmap.png",
-        "results/report/atheromics_tvas_report.pptx"
+        "results/report/atheromics_tvas_report.html"
 
 
 rule preprocess_metabolomics:
@@ -124,18 +125,28 @@ rule summary_heatmap:
         """
 
 
-rule report_pptx:
+rule clinical_continuous_qc:
+    input:
+        clinical = "data/processed/clinical_tvas.csv"
+    output:
+        "results/clinics/qc/continuous_distributions.png"
+    script:
+        "scripts/clinical_continuous_diagnostics.py"
+
+
+rule report_html:
     input:
         continuous  = "results/clinics/descriptive/continuous.csv",
         categorical = "results/clinics/descriptive/categorical.csv",
         stratified  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
+        qc_grid     = "results/clinics/qc/continuous_distributions.png",
         heatmap_met = "results/metabolomics/summary_heatmap.png",
         heatmap_pro = "results/proteomics/summary_heatmap.png",
         heatmap_tra = "results/transcriptomics/summary_heatmap.png"
     output:
-        "results/report/atheromics_tvas_report.pptx"
+        "results/report/atheromics_tvas_report.html"
     script:
-        "scripts/make_pptx_report.py"
+        "scripts/make_html_report.py"
 
 
 rule limma_proteomics:

@@ -9,6 +9,7 @@ variables:
   - name: age
     excel_name: "Età"
     type: continuous
+    transform: raw
   - name: gender
     excel_name: "sesso"
     type: categorical
@@ -33,93 +34,107 @@ variables:
   - name: weight
     excel_name: "Peso"
     type: continuous
+    transform: raw
   - name: height
     excel_name: "Altezza"
     type: continuous
+    transform: raw
   - name: bmi
     excel_name: "BMI"
     type: continuous
+    transform: raw
   - name: waist
     excel_name: "vita"
     type: continuous
+    transform: raw
   - name: pa_syst
     excel_name: "PA syst"
     type: continuous
+    transform: raw
   - name: pa_diast
     excel_name: "PA diast"
     type: continuous
+    transform: raw
   - name: cholesterol
     excel_name: "colesterolo tot"
     type: continuous
+    transform: raw
   - name: hdl
     excel_name: "HDL"
     type: continuous
+    transform: raw
   - name: ldl
     excel_name: "LDL"
     type: continuous
+    transform: raw
   - name: triglycerides
     excel_name: "trigliceridi"
     type: continuous
+    transform: log
   - name: ast
     excel_name: "AST"
     type: continuous
+    transform: log
   - name: alt
     excel_name: "ALT"
     type: continuous
+    transform: log
   - name: azotemia
     excel_name: "azotemia"
     type: continuous
+    transform: raw
   - name: creatinine
     excel_name: "creatinina"
     type: continuous
+    transform: log
   - name: gfr
     excel_name: "GFR"
     type: continuous
+    transform: raw
   - name: fpg
     excel_name: "FPG 0' mg/dl"
     type: continuous
+    transform: raw
   - name: gluc_120
     excel_name: "120' mg/dl"
     type: continuous
+    transform: raw
   - name: auc_ogtt_gluc
     excel_name: "AUC OGTT GLIC"
     type: continuous
+    transform: raw
   - name: insulinemia
     excel_name: "Insulinemia 0'"
     type: continuous
+    transform: log
   - name: ins_120
     excel_name: "120'"
     type: continuous
+    transform: log
   - name: auc_ogtt_ins
     excel_name: "AUC OGTT INS "
     type: continuous
-  - name: hba1c
-    excel_name: "HbA1c"
-    type: continuous
+    transform: log
   - name: igf1
     excel_name: "IGF1"
     type: continuous
+    transform: raw
   - name: peptide_c
     excel_name: "Peptide C"
     type: continuous
+    transform: log
   - name: hscrp
     excel_name: "hsPCR"
     type: continuous
-  - name: crp
-    excel_name: "PCR"
-    type: continuous
-  - name: fibrinogen
-    excel_name: "fibrinogeno"
-    type: continuous
+    transform: log
   - name: wbc
     excel_name: "WBC"
     type: continuous
+    transform: raw
   - name: plaque_type
     excel_name: "placca stabile/instabile.1"
     type: categorical
-  - name: homa_ir
-    excel_name: "HOMA IR"
-    type: continuous
   - name: tyg_index
     excel_name: "Tyg Index"
     type: continuous
+    transform: raw

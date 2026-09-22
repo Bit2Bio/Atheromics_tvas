@@ -17,7 +17,6 @@
 #     --covariates  age,gender \
 #     --input       data/multiomics/metabolomics_matched.csv \
 #     --metadata    data/multiomics/sample_metadata.csv \
-#     --guide       data/clinical/clinical_variables.csv \
 #     --out_dir     results/multiomics/metabolomics/metabolic_status_3g_adj/
 # -----------------------------------------------------------------------------
 
@@ -36,7 +35,6 @@ option_list <- list(
               help = "Comma-separated covariates, or 'none'"),
   make_option("--input",      type = "character", help = "Metabolomics CSV (samples x features)"),
   make_option("--metadata",   type = "character", help = "Sample metadata CSV"),
-  make_option("--guide",      type = "character", help = "Clinical variable guide CSV"),
   make_option("--out_dir",    type = "character", help = "Output directory")
 )
 
@@ -47,7 +45,6 @@ opt <- parse_args(OptionParser(option_list = option_list))
 # --------------------------------------------------------------------------
 met  <- read_csv(opt$input,    show_col_types = FALSE)
 meta <- read_csv(opt$metadata, show_col_types = FALSE)
-guide <- read_csv(opt$guide,   show_col_types = FALSE)
 
 # metabolomics: samples x features → transpose to features x samples for limma
 sample_col <- colnames(met)[1]

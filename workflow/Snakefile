@@ -1,6 +1,8 @@
 configfile: "config/config.yaml"
 
 VARIABLES = {v["name"]: v["type"] for v in config["variables"]}
+CATEGORICAL_VARIABLES = [v for v, t in VARIABLES.items() if t == "categorical"]
+CONTINUOUS_VARIABLES  = [v for v, t in VARIABLES.items() if t == "continuous"]
 
 
 rule all:
@@ -8,11 +10,17 @@ rule all:
         "data/processed/metabolomics_tvas.csv",
         "data/processed/clinical_tvas.csv",
         "data/processed/clinical_guide.csv",
+        "data/processed/clinical_tvas_transformed.csv",
         "data/processed/transcriptomics_tvas.csv",
         expand("results/metabolomics/limma/{variable}/done.txt",
                variable=VARIABLES.keys()),
         expand("results/proteomics/limma/{variable}/done.txt",
                variable=VARIABLES.keys()),
+        expand("results/transcriptomics/deseq2/{variable}/done.txt",
+               variable=CATEGORICAL_VARIABLES),
+        expand("results/transcriptomics/deseq2/{variable}/{variable}_results.csv",
+               variable=CONTINUOUS_VARIABLES),
+        "results/transcriptomics/summary_heatmap.png",
         "results/clinics/descriptive/continuous.csv",
         "results/clinics/descriptive/categorical.csv",
         "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
@@ -36,7 +44,8 @@ rule preprocess_clinical:
         "data/processed/metabolomics_tvas.csv"
     output:
         "data/processed/clinical_tvas.csv",
-        "data/processed/clinical_guide.csv"
+        "data/processed/clinical_guide.csv",
+        "data/processed/clinical_tvas_transformed.csv"
     script:
         "scripts/preprocess_clinical.py"
 
@@ -121,7 +130,8 @@ rule report_pptx:
         categorical = "results/clinics/descriptive/categorical.csv",
         stratified  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
         heatmap_met = "results/metabolomics/summary_heatmap.png",
-        heatmap_pro = "results/proteomics/summary_heatmap.png"
+        heatmap_pro = "results/proteomics/summary_heatmap.png",
+        heatmap_tra = "results/transcriptomics/summary_heatmap.png"
     output:
         "results/report/atheromics_tvas_report.pptx"
     script:
@@ -131,8 +141,7 @@ rule report_pptx:
 rule limma_proteomics:
     input:
         data  = "data/processed/proteomics_tvas.csv",
-        meta  = "data/processed/clinical_tvas.csv",
-        guide = "data/processed/clinical_guide.csv"
+        meta  = "data/processed/clinical_tvas_transformed.csv"
     output:
         "results/proteomics/limma/{variable}/done.txt"
     params:
@@ -148,17 +157,81 @@ rule limma_proteomics:
             --covariates {params.covariates} \
             --input      {input.data} \
             --metadata   {input.meta} \
-            --guide      {input.guide} \
             --out_dir    {params.out_dir} \
         && touch {output}
+        """
+
+
+rule rnaseq_deseq2:
+    input:
+        data  = "data/processed/transcriptomics_tvas.csv",
+        meta  = "data/processed/clinical_tvas_transformed.csv"
+    output:
+        "results/transcriptomics/deseq2/{variable}/done.txt"
+    params:
+        covariates = config["covariates"],
+        annotation = "data/raw/transcriptomics/gene_annotation.csv",
+        out_dir    = "results/transcriptomics/deseq2/{variable}/",
+        script     = "workflow/scripts/rnaseq_deseq2.R"
+    shell:
+        """
+        Rscript {params.script} \
+            --variable   {wildcards.variable} \
+            --covariates {params.covariates} \
+            --matrix     {input.data} \
+            --metadata   {input.meta} \
+            --annotation {params.annotation} \
+            --out_dir    {params.out_dir} \
+        && touch {output}
+        """
+
+
+rule rnaseq_deseq2_continuous:
+    input:
+        data  = "data/processed/transcriptomics_tvas.csv",
+        meta  = "data/processed/clinical_tvas_transformed.csv"
+    output:
+        "results/transcriptomics/deseq2/{variable}/{variable}_results.csv"
+    params:
+        covariates = config["covariates"],
+        annotation = "data/raw/transcriptomics/gene_annotation.csv",
+        out_dir    = "results/transcriptomics/deseq2/{variable}/",
+        script     = "workflow/scripts/rnaseq_deseq2_continuous.R"
+    shell:
+        """
+        Rscript {params.script} \
+            --variable   {wildcards.variable} \
+            --covariates {params.covariates} \
+            --matrix     {input.data} \
+            --metadata   {input.meta} \
+            --annotation {params.annotation} \
+            --out_dir    {params.out_dir}
+        """
+
+
+rule rnaseq_summary_heatmap:
+    input:
+        expand("results/transcriptomics/deseq2/{variable}/done.txt",
+               variable=CATEGORICAL_VARIABLES),
+        expand("results/transcriptomics/deseq2/{variable}/{variable}_results.csv",
+               variable=CONTINUOUS_VARIABLES)
+    output:
+        "results/transcriptomics/summary_heatmap.png"
+    params:
+        results_dir = "results/transcriptomics/deseq2/",
+        script      = "workflow/scripts/rnaseq_summary_heatmap.py"
+    shell:
+        """
+        python {params.script} \
+            --results {params.results_dir} \
+            --out     {output}
         """
 
 
 rule limma_metabolomics:
     input:
         data  = "data/processed/metabolomics_tvas.csv",
-        meta  = "data/processed/clinical_tvas.csv",
-        guide = "data/processed/clinical_guide.csv"
+        meta  = "data/processed/clinical_tvas_transformed.csv"
     output:
         "results/metabolomics/limma/{variable}/done.txt"
     params:
@@ -174,7 +247,6 @@ rule limma_metabolomics:
             --covariates {params.covariates} \
             --input      {input.data} \
             --metadata   {input.meta} \
-            --guide      {input.guide} \
             --out_dir    {params.out_dir} \
         && touch {output}
         """

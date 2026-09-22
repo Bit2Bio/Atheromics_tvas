@@ -5,6 +5,7 @@ Build a minimal summary PPTX report:
   2. Clinical descriptive statistics stratified by the target variable
   3. Metabolomics summary heatmap
   4. Proteomics summary heatmap
+  5. Transcriptomics summary heatmap
 """
 
 import pandas as pd
@@ -17,8 +18,9 @@ from pptx.enum.text import PP_ALIGN
 CONTINUOUS  = "results/clinics/descriptive/continuous.csv"
 CATEGORICAL = "results/clinics/descriptive/categorical.csv"
 STRATIFIED  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv"
-HEATMAP_METABOLOMICS = "results/metabolomics/summary_heatmap.png"
-HEATMAP_PROTEOMICS   = "results/proteomics/summary_heatmap.png"
+HEATMAP_METABOLOMICS   = "results/metabolomics/summary_heatmap.png"
+HEATMAP_PROTEOMICS     = "results/proteomics/summary_heatmap.png"
+HEATMAP_TRANSCRIPTOMICS = "results/transcriptomics/summary_heatmap.png"
 OUT = Path("results/report/atheromics_tvas_report.pptx")
 
 SLIDE_W = Inches(13.33)
@@ -120,6 +122,11 @@ add_picture_fit(sl3, HEATMAP_METABOLOMICS, Inches(0.3), Inches(0.9), Inches(12.7
 sl4 = add_slide(prs)
 add_title(sl4, "Proteomics — summary heatmap")
 add_picture_fit(sl4, HEATMAP_PROTEOMICS, Inches(0.3), Inches(0.9), Inches(12.7), Inches(6.3))
+
+# Slide 5: transcriptomics summary heatmap
+sl5 = add_slide(prs)
+add_title(sl5, "Transcriptomics — summary heatmap")
+add_picture_fit(sl5, HEATMAP_TRANSCRIPTOMICS, Inches(0.3), Inches(0.9), Inches(12.7), Inches(6.3))
 
 # --------------------------------------------------------------------------
 # Save

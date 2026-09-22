@@ -3,8 +3,10 @@
 Preprocessing clinical data from TVAS sheet.
 
 Output:
-  data/processed/clinical_tvas.csv
+  data/processed/clinical_tvas.csv              raw values, for descriptive stats/reporting
   data/processed/clinical_guide.csv
+  data/processed/clinical_tvas_transformed.csv  log-transformed where config says so,
+                                                 for differential expression analyses
 """
 
 import pandas as pd
@@ -20,6 +22,7 @@ VARIABLES = [
     (v["excel_name"], v["name"], v["type"])
     for v in snakemake.config["variables"]
 ]
+LOG_VARIABLES = [v["name"] for v in snakemake.config["variables"] if v.get("transform") == "log"]
 
 # --------------------------------------------------------------------------
 # Load
@@ -90,14 +93,23 @@ met_ids = pd.read_csv(MET_FILE, index_col=0).index
 out = out.reindex(met_ids)
 
 # --------------------------------------------------------------------------
+# Log-transformed copy for differential expression analyses
+# --------------------------------------------------------------------------
+out_transformed = out.copy()
+for col in LOG_VARIABLES:
+    out_transformed[col] = np.log(out_transformed[col])
+
+# --------------------------------------------------------------------------
 # Save
 # --------------------------------------------------------------------------
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 out.to_csv(OUT_DIR / "clinical_tvas.csv")
 guide.to_csv(OUT_DIR / "clinical_guide.csv", index=False)
+out_transformed.to_csv(OUT_DIR / "clinical_tvas_transformed.csv")
 
 print(f"clinical_tvas.csv:  {out.shape[0]} campioni x {out.shape[1]} variabili")
 print(f"clinical_guide.csv: {len(guide)} variabili")
+print(f"clinical_tvas_transformed.csv: log applicato a {len(LOG_VARIABLES)} variabili: {LOG_VARIABLES}")
 print("\nNA per variabile:")
 for col in out.columns:
     na = out[col].isna().sum()

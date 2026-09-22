@@ -20,7 +20,6 @@
 #     --covariates  age,gender \
 #     --input       data/multiomics/proteomics_filtered.csv \
 #     --metadata    data/multiomics/sample_metadata.csv \
-#     --guide       data/clinical/clinical_variables.csv \
 #     --out_dir     results/multiomics/proteomics/limma_adjusted/metabolic_status_3g/
 # -----------------------------------------------------------------------------
 
@@ -39,7 +38,6 @@ option_list <- list(
               help = "Comma-separated covariates, or 'none'"),
   make_option("--input",      type = "character", help = "Proteomics CSV (proteins x samples)"),
   make_option("--metadata",   type = "character", help = "Sample metadata CSV"),
-  make_option("--guide",      type = "character", help = "Clinical variable guide CSV"),
   make_option("--out_dir",    type = "character", help = "Output directory")
 )
 
@@ -50,7 +48,6 @@ opt <- parse_args(OptionParser(option_list = option_list))
 # --------------------------------------------------------------------------
 prot  <- read_csv(opt$input,    show_col_types = FALSE)
 meta  <- read_csv(opt$metadata, show_col_types = FALSE)
-guide <- read_csv(opt$guide,    show_col_types = FALSE)
 
 # proteomics: proteins x samples — first column = protein names
 prot <- as.data.frame(prot)

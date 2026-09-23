@@ -17,6 +17,7 @@
 #     --covariates  age,gender \
 #     --input       data/multiomics/metabolomics_matched.csv \
 #     --metadata    data/multiomics/sample_metadata.csv \
+#     --annotation  data/raw/metabolomics/chemical_metadata.csv \
 #     --out_dir     results/multiomics/metabolomics/metabolic_status_3g_adj/
 # -----------------------------------------------------------------------------
 
@@ -25,6 +26,7 @@ suppressPackageStartupMessages({
   library(optparse)
   library(readr)
   library(tibble)
+  library(dplyr)
 })
 
 option_list <- list(
@@ -35,6 +37,8 @@ option_list <- list(
               help = "Comma-separated covariates, or 'none'"),
   make_option("--input",      type = "character", help = "Metabolomics CSV (samples x features)"),
   make_option("--metadata",   type = "character", help = "Sample metadata CSV"),
+  make_option("--annotation", type = "character", default = "data/raw/metabolomics/chemical_metadata.csv",
+              help = "Metabolon chemical metadata CSV (CHEM_ID -> chemical name)"),
   make_option("--out_dir",    type = "character", help = "Output directory")
 )
 
@@ -45,6 +49,13 @@ opt <- parse_args(OptionParser(option_list = option_list))
 # --------------------------------------------------------------------------
 met  <- read_csv(opt$input,    show_col_types = FALSE)
 meta <- read_csv(opt$metadata, show_col_types = FALSE)
+annot <- read_csv(opt$annotation, show_col_types = FALSE, name_repair = "unique_quiet") %>%
+  transmute(feature       = as.character(`CHEM_ID...1`),
+            chemical_name = CHEMICAL_NAME,
+            plot_name     = PLOT_NAME,
+            super_pathway = SUPER_PATHWAY,
+            sub_pathway   = SUB_PATHWAY) %>%
+  distinct(feature, .keep_all = TRUE)
 
 # metabolomics: samples x features → transpose to features x samples for limma
 sample_col <- colnames(met)[1]
@@ -130,6 +141,7 @@ if (opt$type == "categorical") {
     pair <- pairs[[i]]
     res  <- topTable(fit2, coef = i, number = Inf, sort.by = "P")
     res  <- rownames_to_column(res, var = "feature")
+    res  <- left_join(res, annot, by = "feature")
     fname <- sprintf("contrast_%s_vs_%s.csv", pair[2], pair[1])
     write_csv(res, file.path(opt$out_dir, fname))
     cat(sprintf("  %s: %d FDR<0.05\n", cs, sum(res$adj.P.Val < 0.05, na.rm = TRUE)))
@@ -160,6 +172,7 @@ if (opt$type == "categorical") {
 
   res  <- topTable(fit, coef = opt$variable, number = Inf, sort.by = "P")
   res  <- rownames_to_column(res, var = "feature")
+  res  <- left_join(res, annot, by = "feature")
   write_csv(res, file.path(opt$out_dir, paste0(opt$variable, ".csv")))
   cat(sprintf("  %s: %d FDR<0.05\n", opt$variable, sum(res$adj.P.Val < 0.05, na.rm = TRUE)))
 

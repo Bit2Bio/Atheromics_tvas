@@ -27,6 +27,9 @@ rule all:
         "results/clinics/qc/continuous_distributions.png",
         "results/metabolomics/summary_heatmap.png",
         "results/proteomics/summary_heatmap.png",
+        "results/metabolomics/metabolomics_limma_results.xlsx",
+        "results/proteomics/proteomics_limma_results.xlsx",
+        "results/transcriptomics/transcriptomics_deseq2_results.xlsx",
         "results/report/atheromics_tvas_report.html"
 
 
@@ -132,6 +135,43 @@ rule clinical_continuous_qc:
         "results/clinics/qc/continuous_distributions.png"
     script:
         "scripts/clinical_continuous_diagnostics.py"
+
+
+rule consolidate_excel:
+    input:
+        expand("results/{omic}/limma/{variable}/done.txt",
+               variable=VARIABLES.keys(), allow_missing=True)
+    output:
+        "results/{omic}/{omic}_limma_results.xlsx"
+    params:
+        results_dir = "results/{omic}/limma/",
+        script      = "workflow/scripts/consolidate_excel.py"
+    shell:
+        """
+        python {params.script} \
+            --omic    {wildcards.omic} \
+            --results {params.results_dir} \
+            --out     {output}
+        """
+
+
+rule rnaseq_consolidate_excel:
+    input:
+        expand("results/transcriptomics/deseq2/{variable}/done.txt",
+               variable=CATEGORICAL_VARIABLES),
+        expand("results/transcriptomics/deseq2/{variable}/{variable}_results.csv",
+               variable=CONTINUOUS_VARIABLES)
+    output:
+        "results/transcriptomics/transcriptomics_deseq2_results.xlsx"
+    params:
+        results_dir = "results/transcriptomics/deseq2/",
+        script      = "workflow/scripts/rnaseq_consolidate_excel.py"
+    shell:
+        """
+        python {params.script} \
+            --results {params.results_dir} \
+            --out     {output}
+        """
 
 
 rule report_html:
@@ -241,8 +281,9 @@ rule rnaseq_summary_heatmap:
 
 rule limma_metabolomics:
     input:
-        data  = "data/processed/metabolomics_tvas.csv",
-        meta  = "data/processed/clinical_tvas_transformed.csv"
+        data       = "data/processed/metabolomics_tvas.csv",
+        meta       = "data/processed/clinical_tvas_transformed.csv",
+        annotation = "data/raw/metabolomics/chemical_metadata.csv"
     output:
         "results/metabolomics/limma/{variable}/done.txt"
     params:
@@ -258,6 +299,7 @@ rule limma_metabolomics:
             --covariates {params.covariates} \
             --input      {input.data} \
             --metadata   {input.meta} \
+            --annotation {input.annotation} \
             --out_dir    {params.out_dir} \
         && touch {output}
         """

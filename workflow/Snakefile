@@ -25,12 +25,20 @@ rule all:
         "results/clinics/descriptive/categorical.csv",
         "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
         "results/clinics/qc/continuous_distributions.png",
+        "results/metabolomics/qc/sample_boxplot.png",
+        "results/metabolomics/qc/pca.png",
         "results/metabolomics/summary_heatmap.png",
         "results/proteomics/summary_heatmap.png",
         "results/metabolomics/metabolomics_limma_results.xlsx",
         "results/proteomics/proteomics_limma_results.xlsx",
         "results/transcriptomics/transcriptomics_deseq2_results.xlsx",
-        "results/report/atheromics_tvas_report.html"
+        "results/report/atheromics_tvas_report.html",
+        "results/dm2/metabolomics_volcano.png",
+        "results/dm2/proteomics_volcano.png",
+        "results/dm2/metabolomics_enrichment_super_pathway.csv",
+        "results/dm2/metabolomics_enrichment_sub_pathway.csv",
+        "results/dm2/metabolomics_enrichment_plot.png",
+        "results/dm2/metabolomics_cross_variable_heatmap.png"
 
 
 rule preprocess_metabolomics:
@@ -137,6 +145,16 @@ rule clinical_continuous_qc:
         "scripts/clinical_continuous_diagnostics.py"
 
 
+rule metabolomics_qc:
+    input:
+        metabolomics = "data/processed/metabolomics_tvas.csv"
+    output:
+        boxplot = "results/metabolomics/qc/sample_boxplot.png",
+        pca     = "results/metabolomics/qc/pca.png"
+    script:
+        "scripts/metabolomics_qc.py"
+
+
 rule consolidate_excel:
     input:
         expand("results/{omic}/limma/{variable}/done.txt",
@@ -180,6 +198,8 @@ rule report_html:
         categorical = "results/clinics/descriptive/categorical.csv",
         stratified  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
         qc_grid     = "results/clinics/qc/continuous_distributions.png",
+        met_boxplot = "results/metabolomics/qc/sample_boxplot.png",
+        met_pca     = "results/metabolomics/qc/pca.png",
         heatmap_met = "results/metabolomics/summary_heatmap.png",
         heatmap_pro = "results/proteomics/summary_heatmap.png",
         heatmap_tra = "results/transcriptomics/summary_heatmap.png"
@@ -277,6 +297,55 @@ rule rnaseq_summary_heatmap:
             --results {params.results_dir} \
             --out     {output}
         """
+
+
+rule dm2_metabolomics_volcano:
+    input:
+        "results/metabolomics/limma/dm2/done.txt"
+    output:
+        "results/dm2/metabolomics_volcano.png"
+    script:
+        "scripts/dm2/metabolomics_volcano.py"
+
+
+rule dm2_proteomics_volcano:
+    input:
+        "results/proteomics/limma/dm2/done.txt"
+    output:
+        "results/dm2/proteomics_volcano.png"
+    script:
+        "scripts/dm2/proteomics_volcano.py"
+
+
+rule dm2_metabolomics_enrichment:
+    input:
+        "results/metabolomics/limma/dm2/done.txt"
+    output:
+        super_pathway = "results/dm2/metabolomics_enrichment_super_pathway.csv",
+        sub_pathway   = "results/dm2/metabolomics_enrichment_sub_pathway.csv"
+    script:
+        "scripts/dm2/metabolomics_enrichment.py"
+
+
+rule dm2_metabolomics_enrichment_plot:
+    input:
+        super_pathway = "results/dm2/metabolomics_enrichment_super_pathway.csv",
+        sub_pathway   = "results/dm2/metabolomics_enrichment_sub_pathway.csv"
+    output:
+        "results/dm2/metabolomics_enrichment_plot.png"
+    script:
+        "scripts/dm2/metabolomics_enrichment_plot.py"
+
+
+rule dm2_metabolomics_cross_variable_heatmap:
+    input:
+        sub_pathway = "results/dm2/metabolomics_enrichment_sub_pathway.csv",
+        all_vars    = expand("results/metabolomics/limma/{variable}/done.txt",
+                              variable=VARIABLES.keys())
+    output:
+        "results/dm2/metabolomics_cross_variable_heatmap.png"
+    script:
+        "scripts/dm2/metabolomics_cross_variable_heatmap.py"
 
 
 rule limma_metabolomics:

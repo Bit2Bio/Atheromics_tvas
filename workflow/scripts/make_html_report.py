@@ -20,6 +20,8 @@ CONTINUOUS  = "results/clinics/descriptive/continuous.csv"
 CATEGORICAL = "results/clinics/descriptive/categorical.csv"
 STRATIFIED  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv"
 QC_GRID     = "results/clinics/qc/continuous_distributions.png"
+MET_BOXPLOT = "results/metabolomics/qc/sample_boxplot.png"
+MET_PCA     = "results/metabolomics/qc/pca.png"
 HEATMAP_METABOLOMICS   = "results/metabolomics/summary_heatmap.png"
 HEATMAP_PROTEOMICS     = "results/proteomics/summary_heatmap.png"
 HEATMAP_TRANSCRIPTOMICS = "results/transcriptomics/summary_heatmap.png"
@@ -132,6 +134,13 @@ html = f"""<!DOCTYPE html>
     <h2>Variabili continue — raw vs log (QC)</h2>
     <img src="{img_to_data_uri(QC_GRID)}" style="width:100%; height:auto; border-radius:8px;">
     <div class="meta">Bordo blu = trasformazione usata in pipeline · linea rossa tratteggiata = outlier |z|&gt;3</div>
+  </div>
+
+  <div class="card">
+    <h2>Metabolomica — Quality control</h2>
+    <img src="{img_to_data_uri(MET_BOXPLOT)}" style="width:100%; height:auto; border-radius:8px;">
+    <img src="{img_to_data_uri(MET_PCA)}" style="width:100%; height:auto; border-radius:8px; margin-top:16px;">
+    <div class="meta">Boxplot per campione (normalizzazione) + PCA con ellisse di confidenza al 95% (outlier campione etichettati)</div>
   </div>
 
   <div class="card">

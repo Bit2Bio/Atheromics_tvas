@@ -22,6 +22,12 @@ STRATIFIED  = "results/clinics/descriptive_stratified/descriptive_table_stratifi
 QC_GRID     = "results/clinics/qc/continuous_distributions.png"
 MET_BOXPLOT = "results/metabolomics/qc/sample_boxplot.png"
 MET_PCA     = "results/metabolomics/qc/pca.png"
+PRO_BOXPLOT = "results/proteomics/qc/sample_boxplot.png"
+PRO_PCA     = "results/proteomics/qc/pca.png"
+DM2_MET_VOLCANO    = "results/dm2/metabolomics_volcano.png"
+DM2_MET_ENRICHMENT = "results/dm2/metabolomics_enrichment_plot.png"
+DM2_MET_CROSS_VAR  = "results/dm2/metabolomics_cross_variable_heatmap.png"
+DM2_PRO_VOLCANO    = "results/dm2/proteomics_volcano.png"
 HEATMAP_METABOLOMICS   = "results/metabolomics/summary_heatmap.png"
 HEATMAP_PROTEOMICS     = "results/proteomics/summary_heatmap.png"
 HEATMAP_TRANSCRIPTOMICS = "results/transcriptomics/summary_heatmap.png"
@@ -149,8 +155,35 @@ html = f"""<!DOCTYPE html>
   </div>
 
   <div class="card">
+    <h2>Metabolomica — dm2, volcano plot</h2>
+    <img src="{img_to_data_uri(DM2_MET_VOLCANO)}" style="width:100%; height:auto; border-radius:8px;">
+  </div>
+
+  <div class="card">
+    <h2>Metabolomica — dm2, arricchimento funzionale</h2>
+    <img src="{img_to_data_uri(DM2_MET_ENRICHMENT)}" style="width:100%; height:auto; border-radius:8px;">
+  </div>
+
+  <div class="card">
+    <h2>Metabolomica — dm2, confronto con tutte le variabili</h2>
+    <img src="{img_to_data_uri(DM2_MET_CROSS_VAR)}" style="width:100%; height:auto; border-radius:8px;">
+  </div>
+
+  <div class="card">
+    <h2>Proteomica — Quality control</h2>
+    <img src="{img_to_data_uri(PRO_BOXPLOT)}" style="width:100%; height:auto; border-radius:8px;">
+    <img src="{img_to_data_uri(PRO_PCA)}" style="width:100%; height:auto; border-radius:8px; margin-top:16px;">
+    <div class="meta">Boxplot per campione (normalizzazione NPX) + PCA con ellisse di confidenza al 95%, colorata per piastra Olink (batch tecnico)</div>
+  </div>
+
+  <div class="card">
     <h2>Proteomica — summary heatmap</h2>
     <img src="{img_to_data_uri(HEATMAP_PROTEOMICS)}" style="width:100%; height:auto; border-radius:8px;">
+  </div>
+
+  <div class="card">
+    <h2>Proteomica — dm2, volcano plot</h2>
+    <img src="{img_to_data_uri(DM2_PRO_VOLCANO)}" style="width:100%; height:auto; border-radius:8px;">
   </div>
 
   <div class="card">

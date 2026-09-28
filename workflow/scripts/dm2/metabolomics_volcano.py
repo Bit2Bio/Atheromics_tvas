@@ -37,7 +37,6 @@ ax.scatter(sig_up["logFC"], sig_up["neglog10_fdr"], s=16, color="#E74C3C", alpha
 ax.scatter(sig_down["logFC"], sig_down["neglog10_fdr"], s=16, color="#2E86C1", alpha=0.8, linewidths=0, label="down in G1")
 
 ax.axhline(-np.log10(FDR_CUTOFF), color="gray", linestyle="--", linewidth=0.8)
-ax.axvline(0, color="gray", linestyle="-", linewidth=0.6)
 
 # --------------------------------------------------------------------------
 # Label candidates: reward high significance AND large effect size

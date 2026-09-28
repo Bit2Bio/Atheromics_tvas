@@ -93,9 +93,17 @@ for var_dir in sorted(LIMMA_ROOT.iterdir()):
         col_sig[label]    = df["adj.P.Val"] < FDR_SIG
         col_is_categorical[label] = is_categorical
 
+# dm2 itself, prepended as a reference column so the direction (up/down in
+# G1) of each metabolite is readable at a glance instead of only through
+# row order/color in the rest of the heatmap.
+DM2_COL = "dm2 (G1 vs G0)"
+col_values[DM2_COL] = rows.set_index("feature")["logFC"].reindex(feature_ids)
+col_sig[DM2_COL]    = rows.set_index("feature")["adj.P.Val"].reindex(feature_ids) < FDR_SIG
+col_is_categorical[DM2_COL] = True
+
 cont_cols = sorted([c for c, is_cat in col_is_categorical.items() if not is_cat])
-cat_cols  = sorted([c for c, is_cat in col_is_categorical.items() if is_cat])
-col_order = cont_cols + cat_cols
+cat_cols  = sorted([c for c, is_cat in col_is_categorical.items() if is_cat and c != DM2_COL])
+col_order = [DM2_COL] + cont_cols + cat_cols
 n_cont = len(cont_cols)
 
 mat = pd.DataFrame(col_values)[col_order].loc[feature_ids]
@@ -146,8 +154,9 @@ for r in range(n_rows):
         if sig.values[r, c]:
             ax_main.plot(c, r, marker="o", markersize=2.2, color="black")
 
-# block separator between continuous and categorical
-ax_main.axvline(n_cont - 0.5, color="black", linewidth=1.2)
+# block separators: dm2 reference | continuous | categorical
+ax_main.axvline(0.5, color="black", linewidth=1.2)
+ax_main.axvline(n_cont + 0.5, color="black", linewidth=1.2)
 
 ax_main.set_xticks(range(n_cols))
 ax_main.set_xticklabels(col_order, rotation=90, fontsize=6)
@@ -155,6 +164,7 @@ ax_main.set_yticks(range(n_rows))
 ax_main.set_yticklabels(rows["plot_name"], fontsize=6)
 ax_main.set_ylim(n_rows - 0.5, -0.5)
 ax_main.set_title("Metabolites (dm2 significant sub_pathways) vs all other variables\n"
+                   "1st column: dm2 logFC (direction reference)  |  "
                    "continuous: logFC x SD  |  categorical: raw logFC (group diff)  |  "
                    "● = FDR<0.05 for that cell", fontsize=9)
 

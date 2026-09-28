@@ -27,6 +27,8 @@ rule all:
         "results/clinics/qc/continuous_distributions.png",
         "results/metabolomics/qc/sample_boxplot.png",
         "results/metabolomics/qc/pca.png",
+        "results/proteomics/qc/sample_boxplot.png",
+        "results/proteomics/qc/pca.png",
         "results/metabolomics/summary_heatmap.png",
         "results/proteomics/summary_heatmap.png",
         "results/metabolomics/metabolomics_limma_results.xlsx",
@@ -155,6 +157,16 @@ rule metabolomics_qc:
         "scripts/metabolomics_qc.py"
 
 
+rule proteomics_qc:
+    input:
+        proteomics = "data/processed/proteomics_tvas.csv"
+    output:
+        boxplot = "results/proteomics/qc/sample_boxplot.png",
+        pca     = "results/proteomics/qc/pca.png"
+    script:
+        "scripts/proteomics_qc.py"
+
+
 rule consolidate_excel:
     input:
         expand("results/{omic}/limma/{variable}/done.txt",
@@ -198,10 +210,16 @@ rule report_html:
         categorical = "results/clinics/descriptive/categorical.csv",
         stratified  = "results/clinics/descriptive_stratified/descriptive_table_stratified.csv",
         qc_grid     = "results/clinics/qc/continuous_distributions.png",
-        met_boxplot = "results/metabolomics/qc/sample_boxplot.png",
-        met_pca     = "results/metabolomics/qc/pca.png",
-        heatmap_met = "results/metabolomics/summary_heatmap.png",
+        met_boxplot   = "results/metabolomics/qc/sample_boxplot.png",
+        met_pca       = "results/metabolomics/qc/pca.png",
+        pro_boxplot   = "results/proteomics/qc/sample_boxplot.png",
+        pro_pca       = "results/proteomics/qc/pca.png",
+        heatmap_met   = "results/metabolomics/summary_heatmap.png",
+        dm2_volcano   = "results/dm2/metabolomics_volcano.png",
+        dm2_enrichment = "results/dm2/metabolomics_enrichment_plot.png",
+        dm2_cross_var = "results/dm2/metabolomics_cross_variable_heatmap.png",
         heatmap_pro = "results/proteomics/summary_heatmap.png",
+        dm2_pro_volcano = "results/dm2/proteomics_volcano.png",
         heatmap_tra = "results/transcriptomics/summary_heatmap.png"
     output:
         "results/report/atheromics_tvas_report.html"
@@ -329,7 +347,6 @@ rule dm2_metabolomics_enrichment:
 
 rule dm2_metabolomics_enrichment_plot:
     input:
-        super_pathway = "results/dm2/metabolomics_enrichment_super_pathway.csv",
         sub_pathway   = "results/dm2/metabolomics_enrichment_sub_pathway.csv"
     output:
         "results/dm2/metabolomics_enrichment_plot.png"

@@ -115,6 +115,10 @@ variables:
     excel_name: "AUC OGTT INS "
     type: continuous
     transform: log
+  - name: hba1c
+    excel_name: "HbA1c"
+    type: continuous
+    transform: raw
   - name: igf1
     excel_name: "IGF1"
     type: continuous
@@ -134,6 +138,10 @@ variables:
   - name: plaque_type
     excel_name: "placca stabile/instabile.1"
     type: categorical
+  - name: homa_ir
+    excel_name: "HOMA IR"
+    type: continuous
+    transform: log
   - name: tyg_index
     excel_name: "Tyg Index"
     type: continuous

@@ -18,11 +18,12 @@ Cell marker: a black dot overlay where adj.P.Val < 0.05 for that specific
          metabolite x variable/contrast combination.
 Row annotation: two colored strips (super_pathway, sub_pathway).
 
-Excluded entirely: hba1c, fibrinogen, homa_ir, crp (pending data review,
-same exclusion as config.yaml) — their results/ folders are stale leftovers
-from before that exclusion.
+Excluded entirely: fibrinogen, crp (pending data review, same exclusion as
+config.yaml). hba1c and homa_ir were also excluded here previously for the
+same reason but have since been cleaned and re-added to config.yaml.
 
-Standalone, one-off script (not wired into Snakemake) — run manually:
+Run via Snakemake (rule dm2_metabolomics_cross_variable_heatmap). Paths are
+hardcoded, so it can also be run manually from the project root:
     python workflow/scripts/dm2/metabolomics_cross_variable_heatmap.py
 
 Output:
@@ -39,7 +40,7 @@ SUB_ENRICH   = "results/dm2/metabolomics_enrichment_sub_pathway.csv"
 LIMMA_ROOT   = Path("results/metabolomics/limma")
 CLINICAL_TRANSFORMED = "data/processed/clinical_tvas_transformed.csv"
 OUT          = Path("results/dm2/metabolomics_cross_variable_heatmap.png")
-EXCLUDE_VARS = {"dm2", "hba1c", "fibrinogen", "homa_ir", "crp"}
+EXCLUDE_VARS = {"dm2", "fibrinogen", "crp"}
 FDR_SIG      = 0.05
 
 # --------------------------------------------------------------------------

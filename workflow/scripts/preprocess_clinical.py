@@ -78,6 +78,14 @@ out["hscrp"] = pd.to_numeric(out["hscrp"], errors="coerce")
 # plaque_type: 2 → 1 (instabile)
 out["plaque_type"] = out["plaque_type"].replace(2, 1)
 
+# homa_ir: HOMA IR == 0 with missing Insulinemia is an Excel-formula artifact
+# (blank insulin cell treated as 0 in the ratio), not a real measurement
+out.loc[(out["homa_ir"] == 0) & (out["insulinemia"].isna()), "homa_ir"] = np.nan
+
+# hba1c: column is in mmol/mol (range ~22-89); one value (5.5) is on the %
+# scale instead and is isolated/inconsistent with the rest of the distribution
+out.loc[out["hba1c"] == 5.5, "hba1c"] = np.nan
+
 # --------------------------------------------------------------------------
 # Guide
 # --------------------------------------------------------------------------
